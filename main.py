@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
@@ -41,7 +41,7 @@ def json_request():
     latitude = req_data['latitude']
     direction = req_data['direction']
     speed = req_data['speed']
-
+    
     return '''
             Longitude: {}
             Latitude: {}
