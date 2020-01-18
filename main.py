@@ -1,52 +1,51 @@
-from flask import Flask, request, jsonify
+import flask
+from shelljob import proc
+import time
+from flask import Flask, request, jsonify, render_template, Response
+import json
+import eventlet
+eventlet.monkey_patch()
+    
 
-app = Flask(__name__)
+app = flask.Flask(__name__)
 
-@app.route("/", methods=['POST'])
-def home():
-    print(request.form['longitude'])
-    print(request.form['latitude'])
-    print(request.form['direction'])
-    print(request.form['speed'])
-    return "Received!"
+@app.route("/")
+def index():
+    return render_template('index.html')
+
+
+#@app.route('/text', methods=['GET', 'POST'])
+#def text(comments=[]):
+#    if request.method == "GET":
+#        return render_template("index.html", comments=comments)
+#    comments.append(request.form["text_input"])
+#    return redirect(url_for('text'))
+
 
 @app.route("/post-requests", methods=['GET', 'POST'])
 def post_request():
+    print(request.is_json)
+    data = request.get_json()
+    print(data)
+    #return 'Valid JSON request received!' 
+    return jsonify(data)
+    #return render_template('post_requests.html', post=data)
+    
 
-    if request.method == 'POST':
-        longitude = request.form['longitude']
-        latitude = request.form['latitude']
-        direction = request.form['direction']
-        speed = request.form['speed']
 
-        return '''<h1>The longitude value is: {}</h1>
-                    <h1>The latitude value is: {}</h1>
-                    <h1>The direction value is {}</h1>
-                    <h1>The speed value is {}</h1>'''.format(longitude, latitude, direction, speed)
-        
-
-    return '''<form method="POST">
-                Longitude: <input type="text" name="longitude"><br>
-                Latitude: <input type="text" name="latitude"><br>
-                Direction: <input type="text" name="direction"><br>
-                Speed: <input type="text" name="speed"><br>
-                <input type="submit" value="Submit"><br>
-            </form>'''
-
-@app.route("/json-post-requests", methods=['POST'])
+@app.route("/json-post-requests", methods=['GET','POST'])
 def json_request():
-    req_data = request.get_json()
-
+    req_data = request.get_json(force=True)
     longitude = req_data['longitude']
     latitude = req_data['latitude']
     direction = req_data['direction']
     speed = req_data['speed']
-    
     return '''
             Longitude: {}
             Latitude: {}
             Direction: {}
             Speed: {}'''.format(longitude, latitude, direction, speed)
-
+            
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.debug = True
+    app.run(threaded=True)
