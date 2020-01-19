@@ -1,10 +1,7 @@
 import flask
-from shelljob import proc
 import time
-from flask import Flask, request, jsonify, render_template, Response
+from flask import Flask, request, jsonify, render_template, Response, redirect, url_for
 import json
-import eventlet
-eventlet.monkey_patch()
     
 
 app = flask.Flask(__name__)
@@ -14,21 +11,24 @@ def index():
     return render_template('index.html')
 
 
-#@app.route('/text', methods=['GET', 'POST'])
-#def text(comments=[]):
-#    if request.method == "GET":
-#        return render_template("index.html", comments=comments)
-#    comments.append(request.form["text_input"])
-#    return redirect(url_for('text'))
-
 
 @app.route("/post-requests", methods=['GET', 'POST'])
-def post_request():
+def post_request(comments=[]):
+    #if request.method == "GET":
+    #    return render_template("post_requests.html", comments=comments)
+    #data = request.get_json()
+    #comments.append(data)
+    #return redirect(url_for('post-requests')
+
     print(request.is_json)
     data = request.get_json()
-    print(data)
-    #return 'Valid JSON request received!' 
-    return jsonify(data)
+    comments.append(data)
+    print(comments)
+
+    if request.method == "GET":
+        return render_template("index.html", comments=comments)
+    return 'Valid JSON request received!' 
+    #return jsonify(data)
     #return render_template('post_requests.html', post=data)
     
 
@@ -46,6 +46,5 @@ def json_request():
             Direction: {}
             Speed: {}'''.format(longitude, latitude, direction, speed)
             
-if __name__ == "__main__":
-    app.debug = True
-    app.run(threaded=True)
+if __name__ == '__main__':
+    app.run(debug=True)
